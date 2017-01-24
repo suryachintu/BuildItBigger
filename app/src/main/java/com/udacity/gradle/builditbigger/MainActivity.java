@@ -1,5 +1,6 @@
 package com.udacity.gradle.builditbigger;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -9,9 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
-
-import com.example.JokeProvider;
 import com.example.surya.myapplication.backend.myApi.MyApi;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -29,14 +27,13 @@ public class MainActivity extends AppCompatActivity {
 
     private String jokeString;
     private boolean checkFlavour;
-
+    Dialog dialog;
     InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        new EndpointsAsyncTask().execute(new Pair<Context, String>(this, "Joke"));
 
         checkFlavour = BuildConfig.APPLICATION_ID.equals(getString(R.string.paid_id));
         if (!checkFlavour){
@@ -52,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
             });
             requestNewInterstitial();
         }
+        //set the custom dialog
+        dialog = new Dialog(this);
+        dialog.setContentView(R.layout.loading_dialog);
+        dialog.setCancelable(false);
     }
 
     private void requestNewInterstitial() {
@@ -88,16 +89,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void tellJoke(View view) {
-        //load adds for free flavour
-        if (!checkFlavour) {
-            if (mInterstitialAd.isLoaded()) {
-                mInterstitialAd.show();
-            } else {
-                beginActivity();
-            }
-        }else {
-            beginActivity();
-        }
+
+        new EndpointsAsyncTask().execute(new Pair<Context, String>(this, "Joke"));
+
+        //show the retrieving joke dialog
+        dialog.show();
+
     }
 
     private void beginActivity() {
@@ -143,7 +140,17 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             jokeString = result;
-            Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+            dialog.dismiss();
+            //load adds for free flavour
+            if (!checkFlavour) {
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    beginActivity();
+                }
+            }else {
+                beginActivity();
+            }
         }
     }
 
