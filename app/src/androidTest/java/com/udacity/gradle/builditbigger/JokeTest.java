@@ -1,68 +1,45 @@
 package com.udacity.gradle.builditbigger;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.util.Pair;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
-import com.example.JokeProvider;
 import com.example.surya.myapplication.backend.myApi.MyApi;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.surya.jokeactivity.JokeActivity;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-public class MainActivity extends AppCompatActivity {
+/**
+ * Created by Surya on 24-01-2017.
+ */
 
-    private String jokeString;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        new EndpointsAsyncTask().execute(new Pair<Context, String>(this, "Joke"));
+@RunWith(AndroidJUnit4.class)
+public class JokeTest {
+    @Test
+    public void useAppContext() throws Exception {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getTargetContext();
+
+        assertEquals("com.udacity.gradle.builditbigger", appContext.getPackageName());
+
+        new EndpointsAsyncTask().execute(new Pair<Context, String>(appContext, "Joke"));
+
     }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void tellJoke(View view) {
-        Intent intent = new Intent(this, JokeActivity.class);
-        intent.putExtra("Joke",jokeString);
-        startActivity(intent);
-    }
-
     class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
-        private  MyApi myApiService = null;
+        private MyApi myApiService = null;
         private Context context;
 
         @Override
@@ -97,10 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            jokeString = result;
-            Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+            assertNotNull(result);
         }
     }
-
-
 }

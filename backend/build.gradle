@@ -26,12 +26,12 @@ dependencies {
     compile 'com.google.appengine:appengine-endpoints:1.9.34'
     compile 'com.google.appengine:appengine-endpoints-deps:1.9.34'
     compile 'javax.servlet:servlet-api:2.5'
+    compile project(':jokelibrary')
 }
 
 appengine {
     downloadSdk = true
-    httpPort = 8085
-    httpAddress = "0.0.0.0"
+    httpPort = 8008
     appcfg {
         oauth2 = true
     }

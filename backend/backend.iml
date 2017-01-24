@@ -14,8 +14,8 @@
     </facet>
     <facet type="app-engine-gradle" name="App Engine Gradle">
       <configuration>
-        <option name="HTTP_ADDRESS" value="0.0.0.0" />
-        <option name="HTTP_PORT" value="8085" />
+        <option name="HTTP_ADDRESS" value="localhost" />
+        <option name="HTTP_PORT" value="8008" />
         <option name="WAR_DIR" value="E:\Android_Projects\UdacityProjects\FinalProject\backend\build\exploded-app" />
         <option name="WEB_APP_DIR" value="E:\Android_Projects\UdacityProjects\FinalProject\backend\src\main\webapp" />
         <option name="APPENGINE_SDKROOT" value="C:\Users\Surya\.gradle\appengine-sdk\appengine-java-sdk-1.9.34" />
@@ -40,6 +40,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="jokelibrary" exported="" />
     <orderEntry type="library" exported="" name="appengine-endpoints-1.9.34" level="project" />
     <orderEntry type="library" exported="" name="appengine-endpoints-deps-1.9.34" level="project" />
     <orderEntry type="library" exported="" name="servlet-api-2.5" level="project" />
