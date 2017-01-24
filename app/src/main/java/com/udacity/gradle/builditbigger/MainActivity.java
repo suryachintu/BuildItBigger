@@ -13,6 +13,9 @@ import android.widget.Toast;
 
 import com.example.JokeProvider;
 import com.example.surya.myapplication.backend.myApi.MyApi;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
@@ -25,11 +28,40 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity {
 
     private String jokeString;
+    private boolean checkFlavour;
+
+    InterstitialAd mInterstitialAd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         new EndpointsAsyncTask().execute(new Pair<Context, String>(this, "Joke"));
+
+        checkFlavour = BuildConfig.APPLICATION_ID.equals(getString(R.string.paid_id));
+        if (!checkFlavour){
+
+            mInterstitialAd = new InterstitialAd(this);
+            mInterstitialAd.setAdUnitId(getString(R.string.banner_ad_unit_id));
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdClosed() {
+                    requestNewInterstitial();
+                    beginActivity();
+                }
+            });
+            requestNewInterstitial();
+        }
+    }
+
+    private void requestNewInterstitial() {
+
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("SEE_YOUR_LOGCAT_TO_GET_YOUR_DEVICE_ID")
+                .build();
+
+        mInterstitialAd.loadAd(adRequest);
+
     }
 
 
@@ -56,6 +88,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void tellJoke(View view) {
+        //load adds for free flavour
+        if (!checkFlavour) {
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            } else {
+                beginActivity();
+            }
+        }else {
+            beginActivity();
+        }
+    }
+
+    private void beginActivity() {
         Intent intent = new Intent(this, JokeActivity.class);
         intent.putExtra("Joke",jokeString);
         startActivity(intent);
