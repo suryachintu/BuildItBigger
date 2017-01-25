@@ -7,9 +7,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+
+import com.example.JokeProvider;
 import com.example.surya.myapplication.backend.myApi.MyApi;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -29,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean checkFlavour;
     Dialog dialog;
     InterstitialAd mInterstitialAd;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
             });
             requestNewInterstitial();
         }
+
+
         //set the custom dialog
         dialog = new Dialog(this);
         dialog.setContentView(R.layout.loading_dialog);
@@ -58,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private void requestNewInterstitial() {
 
         AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("SEE_YOUR_LOGCAT_TO_GET_YOUR_DEVICE_ID")
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
 
         mInterstitialAd.loadAd(adRequest);
@@ -90,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void tellJoke(View view) {
 
-        new EndpointsAsyncTask().execute(new Pair<Context, String>(this, "Joke"));
+        new EndpointsAsyncTask().execute(this);
 
         //show the retrieving joke dialog
         dialog.show();
@@ -99,16 +106,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void beginActivity() {
         Intent intent = new Intent(this, JokeActivity.class);
-        intent.putExtra("Joke",jokeString);
+        intent.putExtra("Joke", jokeString);
         startActivity(intent);
     }
 
-    class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
+    class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
         private  MyApi myApiService = null;
         private Context context;
 
         @Override
-        protected String doInBackground(Pair<Context, String>... params) {
+        protected String doInBackground(Context... params) {
             if(myApiService == null) {  // Only do this once
                 MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                         new AndroidJsonFactory(), null)
@@ -127,13 +134,13 @@ public class MainActivity extends AppCompatActivity {
                 myApiService = builder.build();
             }
 
-            context = params[0].first;
-            String name = params[0].second;
+            context = params[0];
 
             try {
-                return myApiService.sayHi(name).execute().getData();
+                return myApiService.sayHi().execute().getData();
             } catch (IOException e) {
-                return e.getMessage();
+                Log.e(TAG,e.getMessage());
+                return null;
             }
         }
 
@@ -141,18 +148,20 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             jokeString = result;
             dialog.dismiss();
-            //load adds for free flavour
-            if (!checkFlavour) {
-                if (mInterstitialAd.isLoaded()) {
-                    mInterstitialAd.show();
+            if (jokeString == null)
+                Toast.makeText(context, "Error in fetching Joke", Toast.LENGTH_SHORT).show();
+            else {
+                //load adds for free flavour
+                if (!checkFlavour) {
+                    if (mInterstitialAd.isLoaded()) {
+                        mInterstitialAd.show();
+                    } else {
+                        beginActivity();
+                    }
                 } else {
                     beginActivity();
                 }
-            }else {
-                beginActivity();
             }
         }
     }
-
-
 }

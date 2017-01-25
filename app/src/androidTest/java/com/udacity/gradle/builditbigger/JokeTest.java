@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.v4.util.Pair;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.surya.myapplication.backend.myApi.MyApi;
@@ -17,8 +17,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -29,21 +32,22 @@ import static org.junit.Assert.assertNull;
 @RunWith(AndroidJUnit4.class)
 public class JokeTest {
     @Test
-    public void useAppContext() throws Exception {
-        // Context of the app under test.
+    public void testDoInBackground() throws TimeoutException {
         Context appContext = InstrumentationRegistry.getTargetContext();
-
-        assertEquals("com.udacity.gradle.builditbigger", appContext.getPackageName());
-
-        new EndpointsAsyncTask().execute(new Pair<Context, String>(appContext, "Joke"));
-
+        EndpointsAsyncTask asyncTask = new EndpointsAsyncTask();
+        asyncTask.execute(appContext);
+        String result = null;
+        try {
+            result = asyncTask.get(20, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        assertNotNull(result);
     }
-    class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
-        private MyApi myApiService = null;
-        private Context context;
-
+    class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
+        private  MyApi myApiService = null;
         @Override
-        protected String doInBackground(Pair<Context, String>... params) {
+        protected String doInBackground(Context... params) {
             if(myApiService == null) {  // Only do this once
                 MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                         new AndroidJsonFactory(), null)
@@ -62,19 +66,16 @@ public class JokeTest {
                 myApiService = builder.build();
             }
 
-            context = params[0].first;
-            String name = params[0].second;
-
             try {
-                return myApiService.sayHi(name).execute().getData();
+                return myApiService.sayHi().execute().getData();
             } catch (IOException e) {
-                return e.getMessage();
+                return null;
             }
         }
 
         @Override
         protected void onPostExecute(String result) {
-            assertNotNull(result);
+
         }
     }
 }

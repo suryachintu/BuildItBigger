@@ -28,6 +28,23 @@ android {
     }
 }
 
+task startAppEngineAndTest(type: GradleBuild) {
+    dependsOn ":backend:appengineRun"
+    project(":backend").afterEvaluate { backend ->
+        backend.extensions.appengine.daemon = true
+    }
+
+    tasks = [':app:connectedAndroidTest']
+}
+
+task runAppEngineAndTest(type: GradleBuild) {
+    description "launches the GCE local development server, runs all tests, shuts the server down again"
+    dependsOn "startAppEngineAndTest"
+
+    tasks = [":backend:appengineStop"]
+}
+
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {

@@ -10,4 +10,78 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.surya.jokeactivity.JokeActivity">
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/left_layout"
+        android:orientation="vertical"
+        android:layout_above="@+id/right_layout"
+        android:padding="4dp"
+        android:background="@drawable/msg_in">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/msg_marginLeft"
+            android:layout_marginStart="@dimen/msg_marginLeft"
+            android:layout_marginRight="@dimen/msg_marginRight"
+            android:layout_marginEnd="@dimen/msg_marginRight"
+            android:layout_marginTop="@dimen/msg_marginTop"
+            android:textColor="@color/textColor"
+            android:text="@string/person"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/stranger_message"
+            android:layout_marginLeft="@dimen/msg_marginLeft"
+            android:layout_marginStart="@dimen/msg_marginLeft"
+            tools:text="Users Message"
+            android:layout_marginRight="@dimen/farmer_msg_marginRight"
+            android:layout_marginEnd="@dimen/farmer_msg_marginRight"
+            android:layout_marginBottom="@dimen/msg_marginBottom"
+            android:layout_marginTop="@dimen/msg_marginRight" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/right_layout"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:padding="4dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/msg_out">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/sent_user_incoming"
+            android:layout_marginRight="@dimen/msg_marginLeft"
+            android:layout_marginEnd="@dimen/msg_marginLeft"
+            android:layout_marginLeft="@dimen/msg_marginRight"
+            android:layout_marginStart="@dimen/msg_marginRight"
+            android:layout_marginTop="@dimen/msg_marginTop"
+            android:textColor="@color/textColor"
+            android:layout_gravity="start"
+            android:text="@string/farmerName"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/farmer_message"
+            android:layout_marginRight="@dimen/msg_marginLeft"
+            android:layout_marginEnd="@dimen/msg_marginLeft"
+            tools:text="Users Message"
+            android:layout_marginLeft="@dimen/farmer_msg_marginRight"
+            android:layout_marginStart="@dimen/farmer_msg_marginRight"
+            android:layout_marginBottom="@dimen/msg_marginBottom"
+            android:layout_marginTop="@dimen/msg_marginTop"
+            android:layout_gravity="start" />
+
+    </LinearLayout>
+
 </RelativeLayout>
